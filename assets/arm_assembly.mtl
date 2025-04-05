@@ -1,0 +1,177 @@
+# MTL file - created by a modified js OBJExporter
+
+newmtl material17
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 1
+Pds 1
+Pl 1
+Ka 1 1 1
+Kd 0.2 0.2 0.2
+Ke 0 0 0
+
+newmtl material18
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 1
+Pds 1
+Pl 1
+Ka 1 1 1
+Kd 0.8666666667 0.9098039216 1
+Ke 0 0 0
+
+newmtl material19
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 1
+Pds 1
+Pl 1
+Ka 1 1 1
+Kd 0.7764705882 0.7568627451 0.737254902
+Ke 0 0 0
+
+newmtl material20
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 1
+Pds 1
+Pl 1
+Ka 1 1 1
+Kd 0.7960784314 0.8235294118 0.937254902
+Ke 0 0 0
+
+newmtl material21
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 1
+Pds 1
+Pl 1
+Ka 1 1 1
+Kd 0.4980392157 0.4980392157 0.4980392157
+Ke 0 0 0
+
+newmtl material22
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 1
+Pds 1
+Pl 1
+Ka 1 1 1
+Kd 0.5019607843 0.5019607843 0.5019607843
+Ke 0 0 0
+
+newmtl material23
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 1
+Pds 1
+Pl 1
+Ka 1 1 1
+Kd 0.1019607843 0.1019607843 0.1019607843
+Ke 0 0 0
+
+newmtl material24
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 1
+Pds 1
+Pl 1
+Ka 1 1 1
+Kd 0.2509803922 0.2509803922 0.2509803922
+Ke 0 0 0
+
+newmtl material25
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 1
+Pds 1
+Pl 1
+Ka 1 1 1
+Kd 0.6941176471 0.09803921569 0.09803921569
+Ke 0 0 0
+
+newmtl material26
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 1
+Pds 1
+Pl 1
+Ka 1 1 1
+Kd 1 1 0
+Ke 0 0 0
+
+newmtl material27
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 1
+Pds 1
+Pl 1
+Ka 1 1 1
+Kd 1 0.8078431373 0.4980392157
+Ke 0 0 0
+
+newmtl material28
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 1
+Pds 1
+Pl 1
+Ka 1 1 1
+Kd 0.7529411765 0.7529411765 0.7529411765
+Ke 0 0 0
+
+newmtl material29
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 1
+Pds 1
+Pl 1
+Ka 1 1 1
+Kd 0.007843137255 0.2392156863 0.8235294118
+Ke 0 0 0
+
+newmtl material30
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 1
+Pds 1
+Pl 1
+Ka 1 1 1
+Kd 1 0 0
+Ke 0 0 0
+
+newmtl material31
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 1
+Pds 1
+Pl 1
+Ka 1 1 1
+Kd 1 0.9490196078 0.9098039216
+Ke 0 0 0
+
+newmtl material32
+Tr 0.0000
+Tf 1.0000 1.0000 1.0000
+illum 1
+Pr 1
+Pds 1
+Pl 1
+Ka 1 1 1
+Kd 0.8980392157 0.9176470588 0.9294117647
+Ke 0 0 0
