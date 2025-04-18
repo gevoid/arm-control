@@ -1,11 +1,13 @@
 import 'dart:io';
 
+import 'package:armcontrol/models/move_function_model.dart';
 import 'package:armcontrol/utils/snackbar.dart';
 import 'package:dio/dio.dart';
 
 class Api {
   final dio = Dio();
-  String basePath = 'http://192.168.21.246';
+  String ip = "192.168.1.184";
+  String get basePath => 'http://$ip';
 
   moveServoToAngle(int servoNumber, int desiredAngle) async {
     try {
@@ -40,11 +42,9 @@ class Api {
     }
   }
 
-  sendControl(int controlNumber, double value) async {
+  startGripperMove() async {
     try {
-      await dio.get(
-        '$basePath/control?number=$controlNumber&value=${value.toStringAsFixed(3)}',
-      );
+      await dio.get('$basePath/startGripper');
     } on DioException catch (e) {
       Snackbar.show(ABC.c, prettyException("Hata Oluştu:", e), success: false);
     }
@@ -53,7 +53,7 @@ class Api {
   Future<bool> checkConnection() async {
     try {
       final socket = await Socket.connect(
-        '192.168.21.246',
+        ip,
         80,
         timeout: Duration(milliseconds: 1500),
       );
@@ -63,28 +63,6 @@ class Api {
       return false; // Bağlantı başarısız
     }
   }
-
-  // Future<bool> checkConnection() async {
-  //   try {
-  //     await dio.get(
-  //       '$basePath/status',
-  //       options: Options(
-  //         sendTimeout: Duration(
-  //           milliseconds: 100,
-  //         ), // Sunucuya bağlanma süresi sınırı
-  //         receiveTimeout: Duration(
-  //           milliseconds: 100,
-  //         ), // Yanıt alma süresi sınırı
-  //       ),
-  //     );
-  //     return true;
-  //   } on DioException catch (e) {
-  //     Snackbar.show(ABC.c, prettyException("Hata Oluştu:", e), success: false);
-  //     return false;
-  //   } catch (e) {
-  //     return false;
-  //   }
-  // }
 
   Future<double?> getTempValue() async {
     try {
@@ -100,6 +78,67 @@ class Api {
     try {
       Response response = await dio.get('$basePath/distance');
       return double.parse(response.data.toString());
+    } on DioException catch (e) {
+      Snackbar.show(ABC.c, prettyException("Hata Oluştu:", e), success: false);
+      return null;
+    }
+  }
+
+  Future<List<int>?> getCurrentServoAngles() async {
+    try {
+      Response response = await dio.get('$basePath/getCurrentServoAngles');
+      return response.data
+          .toString()
+          .split(',')
+          .map((e) => int.parse(e.trim()))
+          .toList();
+    } on DioException catch (e) {
+      Snackbar.show(ABC.c, prettyException("Hata Oluştu:", e), success: false);
+      return null;
+    }
+  }
+
+  Future<bool> runMoveFunction(MoveFunction mf) async {
+    print(mf.toJson());
+    try {
+      Response response = await dio.post(
+        '$basePath/runMoveFunction',
+        data: mf.toJson(),
+      );
+
+      if (response.data == 'OK') {
+        return true;
+      }
+      return false;
+    } on DioException catch (e) {
+      Snackbar.show(ABC.c, prettyException("Hata Oluştu:", e), success: false);
+      return false;
+    }
+  }
+
+  Future<bool> stopMoveFunction() async {
+    try {
+      Response response = await dio.get('$basePath/stop');
+      if (response.data == 'OK') {
+        return true;
+      }
+      return false;
+    } on DioException catch (e) {
+      Snackbar.show(ABC.c, prettyException("Hata Oluştu:", e), success: false);
+      return false;
+    }
+  }
+
+  Future<bool?> checkMoveFunctionStatus() async {
+    try {
+      Response response = await dio.get('$basePath/moveFunctionStatus');
+      if (response.data == 'RUNNING') {
+        return false; // işlem devam ediyor demek
+      } else if (response.data == 'DONE') {
+        return true;
+      }
+
+      return null;
     } on DioException catch (e) {
       Snackbar.show(ABC.c, prettyException("Hata Oluştu:", e), success: false);
       return null;

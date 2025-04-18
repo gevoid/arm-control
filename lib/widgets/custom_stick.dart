@@ -1,3 +1,4 @@
+import 'package:armcontrol/utils/api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_joystick/flutter_joystick.dart';
 
@@ -13,7 +14,7 @@ class CustomJoystickStick extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      child: Opacity(opacity: 0.8, child: Image.asset('assets/bseu_logo.png')),
+      child: Opacity(opacity: 0.9, child: Image.asset('assets/bseu_logo.png')),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         boxShadow: [
@@ -85,19 +86,70 @@ class ColorUtils {
 }
 
 class CustomJoyStickBase extends StatelessWidget {
-  const CustomJoyStickBase({super.key});
-
+  CustomJoyStickBase({super.key});
+  var buttonStyle = ElevatedButton.styleFrom(
+    backgroundColor: Colors.transparent,
+    elevation: 0,
+  );
   @override
   Widget build(BuildContext context) {
-    return JoystickBase(
-      decoration: JoystickBaseDecoration(
-        innerCircleColor: Colors.white10,
+    return Stack(
+      children: [
+        JoystickBase(
+          decoration: JoystickBaseDecoration(
+            innerCircleColor: Colors.white10,
 
-        color: Colors.white12,
-        drawOuterCircle: false,
-        boxShadows: [],
-      ),
-      arrowsDecoration: JoystickArrowsDecoration(color: Colors.black54),
+            color: Colors.white10,
+            drawOuterCircle: false,
+            boxShadows: [],
+          ),
+          arrowsDecoration: JoystickArrowsDecoration(color: Colors.black54),
+        ),
+        //ileri
+        Positioned(
+          width: 40,
+          top: 13,
+          left: 80,
+          child: ElevatedButton(
+            style: buttonStyle,
+            onPressed: () => Api().moveServoStepDecrease(5),
+            child: Text(''),
+          ),
+        ),
+        //geri
+        Positioned(
+          width: 40,
+          bottom: 13,
+          left: 80,
+          child: ElevatedButton(
+            style: buttonStyle,
+            onPressed: () => Api().moveServoStepIncrease(5),
+            child: Text(''),
+          ),
+        ),
+        //sol
+        Positioned(
+          width: 40,
+          top: 75,
+          left: 18,
+          child: ElevatedButton(
+            style: buttonStyle,
+            onPressed: () => Api().moveServoStepDecrease(6),
+            child: Text(''),
+          ),
+        ),
+        //sağ
+        Positioned(
+          width: 40,
+          top: 75,
+          right: 18,
+          child: ElevatedButton(
+            style: buttonStyle,
+            onPressed: () => Api().moveServoStepIncrease(6),
+            child: Text(''),
+          ),
+        ),
+      ],
     );
   }
 }

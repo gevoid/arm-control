@@ -1,5 +1,6 @@
 import 'package:armcontrol/providers/general_provider.dart';
 import 'package:armcontrol/screens/function_details_screen.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
@@ -35,49 +36,40 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
                   padding: const EdgeInsets.all(4.0),
                   child: GestureDetector(
                     onLongPress: () {
-                      Get.defaultDialog(
-                        title: "Uyarı",
-                        content: Text(
-                          '${function.name} isimli fonksiyonu gerçekten silmek istiyor musunuz?',
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              providerR.removeMoveFunction(function);
-                              Get.back();
-                            },
-                            child: Text(
-                              'Sil',
-                              style: TextStyle(color: Colors.red),
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () => Get.back(),
-                            child: Text(
-                              'İptal',
-                              style: TextStyle(color: Colors.blue),
-                            ),
-                          ),
-                        ],
-                      );
+                      AwesomeDialog(
+                        context: context,
+                        width: 400,
+                        dialogType: DialogType.warning,
+                        animType: AnimType.rightSlide,
+                        title: 'Uyarı',
+                        desc:
+                            '${function.name} isimli fonksiyonu gerçekten silmek istiyor musunuz?',
+                        btnOkText: 'Sil',
+                        btnOkOnPress: () {
+                          providerR.removeMoveFunction(function);
+                        },
+                        btnCancelText: 'İptal',
+                        btnCancelOnPress: () {},
+                      ).show();
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.black12,
+                        color: Colors.black45,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            SizedBox(width: 16),
                             Text(
                               function.name ?? '',
                               style: TextStyle(
                                 color: Colors.white70,
-                                fontSize: 16,
+                                fontSize: 18,
                               ),
                             ),
+                            Spacer(),
                             ElevatedButton.icon(
                               icon: Icon(Icons.edit, color: Colors.white70),
                               onPressed:
@@ -153,12 +145,17 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
                     .addMoveFunction(functionNameController.text)
                     .then((value) {
                       if (!value) {
-                        Get.defaultDialog(
+                        AwesomeDialog(
+                          context: context,
+                          width: 400,
+                          dialogType: DialogType.error,
+                          animType: AnimType.rightSlide,
                           title: 'Hata',
-                          content: Text(
-                            'Bu isimde bir fonksiyon zaten mevcut.',
-                          ),
-                        );
+                          desc:
+                              '${functionNameController.text.toUpperCase()} adında bir fonksiyon zaten mevcut.',
+                          btnOkText: 'Tamam',
+                          btnOkOnPress: () {},
+                        ).show();
                       } else {
                         setState(() {
                           addFunction = false;

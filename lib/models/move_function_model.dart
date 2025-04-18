@@ -12,21 +12,11 @@ String moveFunctionToJson(MoveFunction data) => json.encode(data.toJson());
 
 @unfreezed
 abstract class MoveFunction with _$MoveFunction {
-  factory MoveFunction({String? name, List<Command>? commands}) = _MoveFunction;
+  factory MoveFunction({
+    required String name,
+    required List<List<int>> commands,
+  }) = _MoveFunction;
 
   factory MoveFunction.fromJson(Map<String, dynamic> json) =>
       _$MoveFunctionFromJson(json);
-}
-
-@freezed
-abstract class Command with _$Command {
-  const factory Command({
-    String? type,
-    String? typeValue,
-    int? servoNumber,
-    int? targetAngle,
-  }) = _Command;
-
-  factory Command.fromJson(Map<String, dynamic> json) =>
-      _$CommandFromJson(json);
 }

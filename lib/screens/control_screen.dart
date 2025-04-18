@@ -4,6 +4,7 @@ import 'package:armcontrol/models/move_function_model.dart';
 import 'package:armcontrol/providers/general_provider.dart';
 import 'package:armcontrol/screens/settings_screen.dart';
 import 'package:armcontrol/widgets/custom_stick.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_joystick/flutter_joystick.dart';
@@ -12,6 +13,7 @@ import 'package:gauge_indicator/gauge_indicator.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 
 import '../utils/api.dart';
+import '../widgets/runing_function_dialog_widget.dart';
 
 class ControlScreen extends ConsumerStatefulWidget {
   const ControlScreen({super.key});
@@ -36,10 +38,10 @@ class _ControlScreenState extends ConsumerState<ControlScreen> {
 
   @override
   void dispose() {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
+    // SystemChrome.setPreferredOrientations([
+    //   DeviceOrientation.portraitUp,
+    //   DeviceOrientation.portraitDown,
+    // ]);
     _statusTimer?.cancel();
     super.dispose();
   }
@@ -57,7 +59,18 @@ class _ControlScreenState extends ConsumerState<ControlScreen> {
   Timer? _s2Timer;
   Timer? _s3Timer;
   Timer? _s4Timer;
+  Timer? _holdTimer;
   Timer? _statusTimer;
+
+  void _startHoldMove() {
+    _holdTimer = Timer.periodic(commandSendPeriod, (timer) {
+      Api().moveServoStepIncrease(1);
+    });
+  }
+
+  void _stopHoldMove() {
+    _holdTimer?.cancel();
+  }
 
   void _startServo2Move(bool increase) {
     _s2Timer = Timer.periodic(commandSendPeriod, (timer) {
@@ -128,7 +141,17 @@ class _ControlScreenState extends ConsumerState<ControlScreen> {
               threeDViewer(),
               sensorDataBox(),
 
-              Align(alignment: Alignment.topRight, child: functionButtons()),
+              Align(
+                alignment: Alignment.topRight,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    functionButtons(),
+                    SizedBox(height: 10),
+                    providerW.moveRecMode ? recordButtons() : SizedBox(),
+                  ],
+                ),
+              ),
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Row(
@@ -211,6 +234,91 @@ class _ControlScreenState extends ConsumerState<ControlScreen> {
     );
   }
 
+  IntrinsicHeight recordButtons() {
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          GestureDetector(
+            onTap: () async {
+              bool status =
+                  await ref.read(generalProvider).addCommandToFunction();
+              if (status) {
+                AwesomeDialog(
+                  context: context,
+                  width: 400,
+                  dialogType: DialogType.success,
+                  animType: AnimType.rightSlide,
+                  title: 'Başarılı',
+                  desc:
+                      'Mevcut konum ${ref.watch(generalProvider).moveRecFunctionName} adlı fonksiyona eklendi.',
+                  btnOkText: 'Tamam',
+                  btnOkOnPress: () {},
+                ).show();
+              } else {
+                AwesomeDialog(
+                  context: context,
+                  width: 400,
+                  dialogType: DialogType.error,
+                  animType: AnimType.rightSlide,
+                  title: 'Başarısız',
+                  desc:
+                      'Mevcut konum ${ref.watch(generalProvider).moveRecFunctionName} adlı fonksiyona kaydedilirken hata oluştu.',
+                  btnOkText: 'Tamam',
+                  btnOkOnPress: () {},
+                ).show();
+              }
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.green.withAlpha(100),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(3.0),
+                child: Row(
+                  children: [
+                    Icon(Icons.save, size: 28, color: Colors.green),
+                    SizedBox(width: 4),
+                    Text(
+                      textAlign: TextAlign.center,
+                      'Konumu\nKaydet',
+                      style: TextStyle(fontSize: 10, color: Colors.white70),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SizedBox(width: 10),
+          GestureDetector(
+            onTap: () => ref.read(generalProvider).functionMoveRecModeOFF(),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.red.withAlpha(100),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(3.0),
+                child: Row(
+                  children: [
+                    Icon(Icons.stop_rounded, size: 28, color: Colors.red),
+                    Text(
+                      textAlign: TextAlign.center,
+                      'Kayıt Modu\nKapat',
+                      style: TextStyle(fontSize: 10, color: Colors.white70),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Joystick joystickWidget() {
     return Joystick(
       stick: CustomJoystickStick(),
@@ -221,15 +329,15 @@ class _ControlScreenState extends ConsumerState<ControlScreen> {
         double x = details.x;
         double y = details.y;
 
-        if (details.x > 0.70) {
+        if (details.x > 0.30) {
           Api().moveServoStepIncrease(6);
-        } else if (details.x < -0.70) {
+        } else if (details.x < -0.30) {
           Api().moveServoStepDecrease(6);
         }
 
-        if (details.y > 0.70) {
+        if (details.y > 0.30) {
           Api().moveServoStepIncrease(5);
-        } else if (details.y < -0.70) {
+        } else if (details.y < -0.30) {
           Api().moveServoStepDecrease(5);
         }
 
@@ -314,19 +422,45 @@ class _ControlScreenState extends ConsumerState<ControlScreen> {
   }
 
   holdRelease() {
-    return ElevatedButton(
-      onPressed: () async {
-        if (ref.watch(generalProvider).holding) {
-          await Api().moveServoToAngle(1, 120);
-          ref.read(generalProvider).changeHolding(false);
-        } else {
-          await Api().moveServoToAngle(1, 180);
-          ref.read(generalProvider).changeHolding(true);
-        }
-      },
-      child: Text(
-        !ref.watch(generalProvider).holding ? 'Tut' : 'Bırak',
-        style: buttonTextStyle,
+    var _buttonTextStyle = TextStyle(color: Colors.white, fontSize: 13);
+    return Container(
+      height: 40,
+      decoration: BoxDecoration(
+        color: Colors.black26,
+        borderRadius: BorderRadius.circular(40),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 70,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(padding: EdgeInsets.zero),
+              onPressed: () async {
+                Api().moveServoToAngle(1, 120);
+              },
+              child: Text('Bırak', style: _buttonTextStyle),
+            ),
+          ),
+          SizedBox(width: 5),
+          GestureDetector(
+            onLongPressStart: (_) {
+              _startHoldMove();
+            },
+            onLongPressEnd: (_) {
+              _stopHoldMove();
+            },
+            child: SizedBox(
+              width: 70,
+              child: ElevatedButton(
+                onPressed: () async {
+                  Api().moveServoStepIncrease(1);
+                },
+                child: Text('Tut', style: _buttonTextStyle),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -354,9 +488,9 @@ class _ControlScreenState extends ConsumerState<ControlScreen> {
           children: [
             Container(
               decoration: BoxDecoration(
-                color: Colors.white12,
+                color: Colors.white10,
                 border:
-                    tempValue > 25
+                    tempValue > 30
                         ? tempValue < 50
                             ? Border.all(color: Colors.amber, width: 2)
                             : Border.all(color: Colors.red, width: 2)
@@ -431,12 +565,12 @@ class _ControlScreenState extends ConsumerState<ControlScreen> {
                             segments: [
                               const GaugeSegment(
                                 from: 0,
-                                to: 25,
+                                to: 30,
                                 color: Colors.green,
                                 cornerRadius: Radius.zero,
                               ),
                               const GaugeSegment(
-                                from: 25,
+                                from: 30,
                                 to: 50,
                                 color: Colors.amber,
                                 cornerRadius: Radius.zero,
@@ -464,9 +598,9 @@ class _ControlScreenState extends ConsumerState<ControlScreen> {
             SizedBox(width: 6),
             Container(
               decoration: BoxDecoration(
-                color: Colors.white12,
+                color: Colors.white10,
                 border:
-                    distanceValue < 12
+                    distanceValue < 12 && distanceValue != 0
                         ? distanceValue > 8
                             ? Border.all(color: Colors.amber, width: 2)
                             : Border.all(color: Colors.red, width: 2)
@@ -579,12 +713,15 @@ class _ControlScreenState extends ConsumerState<ControlScreen> {
     );
   }
 
-  ModelViewer threeDViewer() {
-    return const ModelViewer(
-      src: 'assets/arm_assembly.glb',
-      alt: 'A 3D model of an astronaut',
-      arModes: ['scene-viewer', 'webxr', 'quick-look'],
-      autoRotate: true,
+  threeDViewer() {
+    return Padding(
+      padding: const EdgeInsets.all(30.0),
+      child: const ModelViewer(
+        src: 'assets/arm_assembly.glb',
+        alt: 'A 3D model 6-DOF robotic arm',
+        arModes: ['scene-viewer', 'webxr', 'quick-look'],
+        autoRotate: true,
+      ),
     );
   }
 
@@ -593,36 +730,162 @@ class _ControlScreenState extends ConsumerState<ControlScreen> {
     List<MoveFunction> mfl = ref.watch(generalProvider).moveFunctions ?? [];
     for (int i = 0; i < mfl.length; i++) {
       fucntionsButtonsWidgetList.add(
-        ElevatedButton(
-          onPressed: () {},
-          child: Text(mfl[i].name ?? '', style: buttonTextStyle),
+        Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            ElevatedButton(
+              onPressed: () async {
+                showRunningBoxDialog();
+                await Api().runMoveFunction(mfl[i]);
+              },
+              child: Text(mfl[i].name ?? '', style: buttonTextStyle),
+            ),
+            ref.watch(generalProvider).moveRecFunctionName == mfl[i].name
+                ? Padding(
+                  padding: const EdgeInsets.only(bottom: 4.0),
+                  child: Text(
+                    '◉ Kayıt',
+                    style: TextStyle(color: Colors.green, fontSize: 9),
+                  ),
+                )
+                : SizedBox(),
+          ],
         ),
       );
     }
-    fucntionsButtonsWidgetList.add(
-      ElevatedButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const SettingsScreen()),
-          );
-        },
-        child: Icon(Icons.settings),
-      ),
-    );
-    return Row(
-      children: [
-        Spacer(flex: 2),
-        Expanded(
-          flex: 3,
-          child: Wrap(
-            alignment: WrapAlignment.end,
-            runSpacing: 10,
-            spacing: 10,
-            children: fucntionsButtonsWidgetList,
+    // fucntionsButtonsWidgetList.add(
+    //   ElevatedButton(
+    //     onPressed: () {
+    //       Navigator.push(
+    //         context,
+    //         MaterialPageRoute(builder: (context) => const SettingsScreen()),
+    //       );
+    //     },
+    //     child: Icon(Icons.settings),
+    //   ),
+    // );
+    return Padding(
+      padding: const EdgeInsets.only(top: 7.0),
+      child: Row(
+        children: [
+          Spacer(flex: 4),
+          Flexible(
+            fit: FlexFit.tight,
+            flex: 6,
+            child: Stack(
+              alignment: Alignment.centerRight,
+              clipBehavior: Clip.none,
+              children: [
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned(
+                      left: 20,
+                      top: -16,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(8),
+                            topRight: Radius.circular(8),
+                          ),
+                        ),
+
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                            top: 3.0,
+                            left: 5,
+                            right: 5,
+                          ),
+                          child: Text(
+                            'Fonksiyonlar',
+                            style: TextStyle(color: Colors.black, fontSize: 9),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      clipBehavior: Clip.antiAlias,
+                      decoration: BoxDecoration(
+                        color: Colors.black26,
+                        borderRadius: BorderRadiusDirectional.circular(20),
+                      ),
+                      child: SizedBox(
+                        height: 45,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          reverse: true,
+                          scrollDirection: Axis.horizontal,
+                          itemCount: mfl.length,
+
+                          itemBuilder: (context, i) {
+                            return Padding(
+                              padding: const EdgeInsets.only(
+                                left: 4,
+                                right: 4.0,
+                              ),
+                              child: Stack(
+                                alignment: Alignment.bottomCenter,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () {},
+                                    onLongPress: () async {
+                                      showRunningBoxDialog();
+                                      await Api().runMoveFunction(mfl[i]);
+                                    },
+                                    child: Text(
+                                      mfl[i].name ?? '',
+                                      style: buttonTextStyle,
+                                    ),
+                                  ),
+                                  ref
+                                              .watch(generalProvider)
+                                              .moveRecFunctionName ==
+                                          mfl[i].name
+                                      ? Padding(
+                                        padding: const EdgeInsets.only(
+                                          bottom: 4.0,
+                                        ),
+                                        child: Text(
+                                          '◉ Kayıt',
+                                          style: TextStyle(
+                                            color: Colors.green,
+                                            fontSize: 9,
+                                          ),
+                                        ),
+                                      )
+                                      : SizedBox(),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      // Wrap(
+                      //
+                      //   alignment: WrapAlignment.end,
+                      //   runSpacing: 10,
+                      //   spacing: 10,
+                      //   children: fucntionsButtonsWidgetList,
+                      // ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+          SizedBox(width: 10),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+              );
+            },
+            child: Icon(Icons.settings),
+          ),
+        ],
+      ),
     );
   }
 }

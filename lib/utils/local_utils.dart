@@ -7,20 +7,15 @@ class LocalUtils {
   EncryptedSharedPreferences encryptedSharedPreferences =
       EncryptedSharedPreferences();
 
-  saveMoveFunctions(List<MoveFunction> mfl) async {
+  Future<bool> saveMoveFunctions(List<MoveFunction> mfl) async {
     final String jsonString = jsonEncode(
       mfl.map((user) => user.toJson()).toList(),
     ); // Listeyi JSON'a çevir
 
-    await encryptedSharedPreferences
-        .setString('moveFunctions', jsonString)
-        .then((bool success) {
-          if (success) {
-            print('success');
-          } else {
-            print('fail');
-          }
-        });
+    return await encryptedSharedPreferences.setString(
+      'moveFunctions',
+      jsonString,
+    );
   }
 
   Future<List<MoveFunction>> getMoveFunctions() async {
