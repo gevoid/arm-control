@@ -20,7 +20,7 @@ Total : 18 files,  1463 codes, 107 comments, 237 blanks, all 1807 lines
 | [lib/models/move\_function\_model.freezed.dart](/lib/models/move_function_model.freezed.dart) | Dart | 180 | 41 | 81 | 302 |
 | [lib/models/move\_function\_model.g.dart](/lib/models/move_function_model.g.dart) | Dart | 23 | 4 | 7 | 34 |
 | [lib/providers/general\_provider.dart](/lib/providers/general_provider.dart) | Dart | 59 | 0 | 14 | 73 |
-| [lib/screens/control\_screen.dart](/lib/screens/control_screen.dart) | Dart | 551 | 29 | 49 | 629 |
+| [lib/screens/control\_screen.dart](/lib/screens/control_screen/control_screen.dart) | Dart | 551 | 29 | 49 | 629 |
 | [lib/screens/function\_details\_screen.dart](/lib/screens/function_details_screen.dart) | Dart | 107 | 0 | 9 | 116 |
 | [lib/screens/functions\_screen.dart](/lib/screens/functions_screen.dart) | Dart | 168 | 0 | 8 | 176 |
 | [lib/screens/settings\_screen.dart](/lib/screens/settings_screen.dart) | Dart | 82 | 0 | 8 | 90 |

@@ -13,7 +13,7 @@ class Api {
     try {
       await dio.get('$basePath/servo?number=$servoNumber&angle=$desiredAngle');
     } on DioException catch (e) {
-      Snackbar.show(ABC.c, prettyException("Hata Oluştu:", e), success: false);
+      Snackbar.show(prettyException("Hata Oluştu:", e), success: false);
       // if (e.response != null) {
       //   print(e.response!.data);
       //   print(e.response!.headers);
@@ -30,7 +30,7 @@ class Api {
     try {
       await dio.get('$basePath/servoStep?number=$servoNumber&desired=increase');
     } on DioException catch (e) {
-      Snackbar.show(ABC.c, prettyException("Hata Oluştu:", e), success: false);
+      Snackbar.show(prettyException("Hata Oluştu:", e), success: false);
     }
   }
 
@@ -38,15 +38,7 @@ class Api {
     try {
       await dio.get('$basePath/servoStep?number=$servoNumber&desired=decrease');
     } on DioException catch (e) {
-      Snackbar.show(ABC.c, prettyException("Hata Oluştu:", e), success: false);
-    }
-  }
-
-  startGripperMove() async {
-    try {
-      await dio.get('$basePath/startGripper');
-    } on DioException catch (e) {
-      Snackbar.show(ABC.c, prettyException("Hata Oluştu:", e), success: false);
+      Snackbar.show(prettyException("Hata Oluştu:", e), success: false);
     }
   }
 
@@ -69,7 +61,7 @@ class Api {
       Response response = await dio.get('$basePath/temp');
       return double.parse(response.data.toString());
     } on DioException catch (e) {
-      Snackbar.show(ABC.c, prettyException("Hata Oluştu:", e), success: false);
+      Snackbar.show(prettyException("Hata Oluştu:", e), success: false);
       return null;
     }
   }
@@ -79,7 +71,7 @@ class Api {
       Response response = await dio.get('$basePath/distance');
       return double.parse(response.data.toString());
     } on DioException catch (e) {
-      Snackbar.show(ABC.c, prettyException("Hata Oluştu:", e), success: false);
+      Snackbar.show(prettyException("Hata Oluştu:", e), success: false);
       return null;
     }
   }
@@ -93,7 +85,7 @@ class Api {
           .map((e) => int.parse(e.trim()))
           .toList();
     } on DioException catch (e) {
-      Snackbar.show(ABC.c, prettyException("Hata Oluştu:", e), success: false);
+      Snackbar.show(prettyException("Hata Oluştu:", e), success: false);
       return null;
     }
   }
@@ -106,12 +98,12 @@ class Api {
         data: mf.toJson(),
       );
 
-      if (response.data == 'OK') {
+      if (response.data == 'Hareket başladı.') {
         return true;
       }
       return false;
     } on DioException catch (e) {
-      Snackbar.show(ABC.c, prettyException("Hata Oluştu:", e), success: false);
+      Snackbar.show(prettyException("Hata Oluştu:", e), success: false);
       return false;
     }
   }
@@ -124,7 +116,7 @@ class Api {
       }
       return false;
     } on DioException catch (e) {
-      Snackbar.show(ABC.c, prettyException("Hata Oluştu:", e), success: false);
+      Snackbar.show(prettyException("Hata Oluştu:", e), success: false);
       return false;
     }
   }
@@ -140,7 +132,7 @@ class Api {
 
       return null;
     } on DioException catch (e) {
-      Snackbar.show(ABC.c, prettyException("Hata Oluştu:", e), success: false);
+      Snackbar.show(prettyException("Hata Oluştu:", e), success: false);
       return null;
     }
   }

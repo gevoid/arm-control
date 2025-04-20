@@ -40,7 +40,11 @@ class _RotatingBoxDialogState extends State<RotatingBoxDialog>
   @override
   void dispose() {
     _statusTimer?.cancel();
-    _animationController.dispose(); // Bellek sızıntısı olmaması için
+    if (_animationController.isAnimating) {
+      print('animasyon durduruldu dispose');
+      _animationController.dispose(); // Bellek sızıntısı olmaması için
+    }
+
     super.dispose();
   }
 
@@ -73,11 +77,17 @@ class _RotatingBoxDialogState extends State<RotatingBoxDialog>
         SizedBox(height: 8),
         ElevatedButton.icon(
           onPressed: () async {
+            if (_statusTimer!.isActive) {
+              _statusTimer?.cancel();
+            }
             await Api().stopMoveFunction().then((value) {
               if (value) {
-                _statusTimer?.cancel();
-                _animationController
-                    .dispose(); // Bellek sızıntısı olmaması için
+                if (_animationController.isAnimating) {
+                  print('animasyon durduruldu');
+                  _animationController
+                      .dispose(); // Bellek sızıntısı olmaması için
+                }
+
                 Get.back();
               }
             });

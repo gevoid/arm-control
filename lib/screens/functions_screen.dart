@@ -17,10 +17,19 @@ class FunctionsScreen extends ConsumerStatefulWidget {
 class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
   TextEditingController functionNameController = TextEditingController();
   bool addFunction = false;
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    var providerW = ref.watch(generalProvider);
-    var providerR = ref.read(generalProvider);
+    print('functions screen build');
+    var moveFunctions = ref.watch(
+      generalProvider.select((g) => g.moveFunctions),
+    );
     return Scaffold(
       appBar: appBar(),
       backgroundColor: backgroundColor,
@@ -29,9 +38,9 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
         children: [
           Expanded(
             child: ListView.builder(
-              itemCount: providerW.moveFunctions.length,
+              itemCount: moveFunctions.length,
               itemBuilder: (context, index) {
-                var function = providerW.moveFunctions[index];
+                var function = moveFunctions[index];
                 return Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: GestureDetector(
@@ -46,7 +55,9 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
                             '${function.name} isimli fonksiyonu gerçekten silmek istiyor musunuz?',
                         btnOkText: 'Sil',
                         btnOkOnPress: () {
-                          providerR.removeMoveFunction(function);
+                          ref
+                              .read(generalProvider.notifier)
+                              .removeMoveFunction(function);
                         },
                         btnCancelText: 'İptal',
                         btnCancelOnPress: () {},
@@ -54,7 +65,7 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.black45,
+                        color: Colors.white10,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Padding(
@@ -141,7 +152,7 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
             : ElevatedButton(
               onPressed: () {
                 ref
-                    .read(generalProvider)
+                    .read(generalProvider.notifier)
                     .addMoveFunction(functionNameController.text)
                     .then((value) {
                       if (!value) {

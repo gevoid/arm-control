@@ -1,6 +1,5 @@
 import 'package:armcontrol/models/move_function_model.dart';
-import 'package:armcontrol/providers/general_provider.dart';
-import 'package:armcontrol/screens/control_screen.dart';
+import 'package:armcontrol/screens/control_screen/control_screen.dart';
 import 'package:armcontrol/utils/api.dart';
 import 'package:armcontrol/widgets/runing_function_dialog_widget.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
@@ -10,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 
 import '../consts.dart';
+import '../providers/general_provider.dart';
 
 class FunctionDetailsScreen extends ConsumerStatefulWidget {
   final MoveFunction moveFunction;
@@ -22,69 +22,93 @@ class FunctionDetailsScreen extends ConsumerStatefulWidget {
 
 class _FunctionDetailsScreenConsumerState
     extends ConsumerState<FunctionDetailsScreen> {
-  TextEditingController s1Controller = TextEditingController();
-  TextEditingController s2Controller = TextEditingController();
-  TextEditingController s3Controller = TextEditingController();
-  TextEditingController s4Controller = TextEditingController();
-  TextEditingController s5Controller = TextEditingController();
-  TextEditingController s6Controller = TextEditingController();
-
+  late List<GlobalKey<FormState>> formKeys;
+  late List<TextEditingController> controllers;
   bool editing = false;
+  int? lastEditIndex;
   int? editIndex;
+
+  @override
+  void initState() {
+    super.initState();
+
+    formKeys = List.generate(
+      ref
+          .read(generalProvider)
+          .moveFunctions
+          .where((func) => func.name == widget.moveFunction.name)
+          .first
+          .commands
+          .length,
+      (_) => GlobalKey<FormState>(),
+    );
+    controllers = List.generate(6, (_) => TextEditingController());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      cancelEdit();
+    });
+  }
+
+  @override
+  void dispose() {
+    for (var controller in controllers) {
+      controller.dispose();
+    }
+
+    super.dispose();
+  }
 
   void edit(int index) {
     var list =
         ref
-            .watch(generalProvider)
+            .read(generalProvider)
             .moveFunctions
             .where((func) => func.name == widget.moveFunction.name)
             .first
             .commands[index];
 
-    setState(() {
-      editing = true;
-      editIndex = index;
-      s1Controller.text = list[0].toString();
-      s2Controller.text = list[1].toString();
-      s3Controller.text = list[2].toString();
-      s4Controller.text = list[3].toString();
-      s5Controller.text = list[4].toString();
-      s6Controller.text = list[5].toString();
-    });
+    for (int i = 0; i < controllers.length; i++) {
+      controllers[i].text = list[i].toString();
+    }
+    ref.read(generalProvider.notifier).startFunctionCmdEdit(index);
   }
 
   void saveEdit(int cmdIndex, GlobalKey<FormState> formKey) async {
     if (formKey.currentState!.validate()) {
+      final command = controllers.map((c) => int.parse(c.text)).toList();
       await ref
-          .read(generalProvider)
-          .editFunctionCommand(widget.moveFunction, cmdIndex, [
-            int.parse(s1Controller.text),
-            int.parse(s2Controller.text),
-            int.parse(s3Controller.text),
-            int.parse(s4Controller.text),
-            int.parse(s5Controller.text),
-            int.parse(s6Controller.text),
-          ])
+          .read(generalProvider.notifier)
+          .editFunctionCommand(widget.moveFunction, cmdIndex, command)
           .then((value) {
             if (value) {
-              setState(() {
-                editing = false;
-                editIndex = null;
-              });
+              ref.read(generalProvider.notifier).saveFunctionCmdEdit(cmdIndex);
             }
           });
     } else {}
   }
 
-  void cancelEdit(int index) {
-    setState(() {
-      editing = false;
-      editIndex = null;
-    });
+  void cancelEdit() {
+    ref.read(generalProvider.notifier).cancelFunctionCmdEdit();
   }
 
   @override
   Widget build(BuildContext context) {
+    editing = ref.watch(generalProvider.select((g) => g.functionCmdEditing));
+    lastEditIndex = ref.watch(
+      generalProvider.select((g) => g.functionCmdEditLastIndex),
+    );
+    editIndex = ref.watch(
+      generalProvider.select((g) => g.functionCmdEditIndex),
+    );
+    print('build func details : last edit index $lastEditIndex');
+    final cmds = ref.watch(
+      generalProvider.select(
+        (g) =>
+            g.moveFunctions
+                .firstWhere((func) => func.name == widget.moveFunction.name)
+                .commands,
+      ),
+    );
+
     return Scaffold(
       appBar: appBar(context),
       backgroundColor: backgroundColor,
@@ -121,42 +145,18 @@ class _FunctionDetailsScreenConsumerState
                   ListView.builder(
                     physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
-                    itemCount:
-                        ref
-                            .watch(generalProvider)
-                            .moveFunctions
-                            .where(
-                              (func) => func.name == widget.moveFunction.name,
-                            )
-                            .first
-                            .commands
-                            .length ??
-                        0,
+                    itemCount: cmds.length,
                     itemBuilder: (context, index) {
-                      var formKey = GlobalKey<FormState>();
-                      if (ref
-                          .watch(generalProvider)
-                          .moveFunctions
-                          .where(
-                            (func) => func.name == widget.moveFunction.name,
-                          )
-                          .first
-                          .commands
-                          .isNotEmpty) {
-                        var cmd =
-                            ref
-                                .watch(generalProvider)
-                                .moveFunctions
-                                .where(
-                                  (func) =>
-                                      func.name == widget.moveFunction.name,
-                                )
-                                .first
-                                .commands[index];
+                      var formKey = formKeys[index];
+                      if (cmds.isNotEmpty) {
+                        var cmd = cmds[index];
 
                         return Container(
+                          key: ValueKey(index),
                           color:
-                              index.isEven
+                              (lastEditIndex == index)
+                                  ? Colors.blue.shade900
+                                  : index.isEven
                                   ? Colors.transparent
                                   : Colors.black45,
                           child: Padding(
@@ -170,33 +170,11 @@ class _FunctionDetailsScreenConsumerState
                                     style: TextStyle(color: Colors.white60),
                                   ),
                                   SizedBox(width: 15),
-                                  editing && editIndex == index
-                                      ? textFieldColumn(s1Controller)
-                                      : column('${cmd[0]}'),
-
-                                  editing && editIndex == index
-                                      ? textFieldColumn(s2Controller)
-                                      : column('${cmd[1]}'),
-
-                                  editing && editIndex == index
-                                      ? textFieldColumn(s3Controller)
-                                      : column('${cmd[2]}'),
-
-                                  editing && editIndex == index
-                                      ? textFieldColumn(s4Controller)
-                                      : column('${cmd[3]}'),
-
-                                  editing && editIndex == index
-                                      ? textFieldColumn(s5Controller)
-                                      : column('${cmd[4]}'),
-
-                                  editing && editIndex == index
-                                      ? textFieldColumn(s6Controller)
-                                      : column('${cmd[5]}'),
+                                  ...buildCmdRow(cmd, index, formKey),
                                   editing && editIndex == index
                                       ? GestureDetector(
                                         onTap: () {
-                                          cancelEdit(index);
+                                          cancelEdit();
                                         },
                                         child: Icon(
                                           Icons.clear,
@@ -266,7 +244,7 @@ class _FunctionDetailsScreenConsumerState
                                         btnOkText: 'Sil',
                                         btnOkOnPress: () {
                                           ref
-                                              .read(generalProvider)
+                                              .read(generalProvider.notifier)
                                               .removeCommandFromFunction(
                                                 widget.moveFunction,
                                                 index,
@@ -308,6 +286,18 @@ class _FunctionDetailsScreenConsumerState
     );
   }
 
+  List<Widget> buildCmdRow(
+    List<int> cmd,
+    int index,
+    GlobalKey<FormState> formKey,
+  ) {
+    return List.generate(6, (i) {
+      return editing && editIndex == index
+          ? textFieldColumn(controllers[i])
+          : column('${cmd[i]}');
+    });
+  }
+
   textFieldColumn(TextEditingController controller) {
     return Expanded(
       child: Center(
@@ -315,7 +305,8 @@ class _FunctionDetailsScreenConsumerState
           padding: const EdgeInsets.all(4.0),
           child: SizedBox(
             height: 28,
-            child: TextFormField(
+            child: TextField(
+              key: ValueKey('edit-${editIndex}-${controller.hashCode}'),
               keyboardType: TextInputType.number,
               controller: controller,
 
@@ -342,16 +333,16 @@ class _FunctionDetailsScreenConsumerState
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 13, color: Colors.white),
 
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'boş olamaz';
-                }
-                final intValue = int.tryParse(value);
-                if (intValue == null) {
-                  return 'tam sayı girin';
-                }
-                return null;
-              },
+              // validator: (value) {
+              //   if (value == null || value.isEmpty) {
+              //     return 'boş olamaz';
+              //   }
+              //   final intValue = int.tryParse(value);
+              //   if (intValue == null) {
+              //     return 'tam sayı girin';
+              //   }
+              //   return null;
+              // },
             ),
           ),
         ),
@@ -406,7 +397,9 @@ class _FunctionDetailsScreenConsumerState
   GestureDetector recButton() {
     return GestureDetector(
       onTap: () {
-        ref.read(generalProvider).functionMoveRecModeON(widget.moveFunction);
+        ref
+            .read(generalProvider.notifier)
+            .functionMoveRecModeON(widget.moveFunction);
         Get.to(() => ControlScreen());
       },
       child: Column(

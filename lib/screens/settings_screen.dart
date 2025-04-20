@@ -1,5 +1,7 @@
 import 'package:armcontrol/screens/functions_screen.dart';
+import 'package:armcontrol/utils/snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../consts.dart';
 
@@ -14,6 +16,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   TextStyle buttonTextStyle = TextStyle(color: Colors.blueGrey);
   @override
   Widget build(BuildContext context) {
+    print('settings build');
     return Scaffold(
       appBar: appBar(context),
       backgroundColor: backgroundColor,
@@ -33,6 +36,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               'Bağlantı Ayarları',
               Icon(Icons.wifi_tethering_outlined, color: Colors.white),
               FunctionsScreen(),
+              pressFunction: () {
+                Snackbar.show(
+                  'Bu özellik geliştirme aşamasında.',
+                  success: true,
+                );
+              },
               context,
             ),
 
@@ -40,6 +49,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               'Veri İletim Ayarları',
               Icon(Icons.data_object, color: Colors.white),
               FunctionsScreen(),
+              pressFunction: () {
+                Snackbar.show(
+                  'Bu özellik geliştirme aşamasında.',
+                  success: true,
+                );
+              },
               context,
             ),
           ],
@@ -53,7 +68,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       title: Text('Ayarlar', style: TextStyle(color: Colors.white)),
       leading: IconButton(
         onPressed: () {
-          Navigator.pop(context);
+          Get.back();
         },
         icon: Icon(Icons.arrow_back, color: Colors.white),
       ),
@@ -62,13 +77,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 }
 
-button(String text, Icon icon, Widget pushScreen, BuildContext context) {
+button(
+  String text,
+  Icon icon,
+  Widget pushScreen,
+  BuildContext context, {
+  Function? pressFunction,
+}) {
   return GestureDetector(
-    onTap:
-        () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => pushScreen),
-        ),
+    onTap: () {
+      pressFunction != null
+          ? pressFunction()
+          : Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => pushScreen),
+          );
+    },
     child: Container(
       decoration: BoxDecoration(
         color: Colors.white12,

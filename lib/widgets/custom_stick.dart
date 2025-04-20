@@ -112,7 +112,7 @@ class CustomJoyStickBase extends StatelessWidget {
           left: 80,
           child: ElevatedButton(
             style: buttonStyle,
-            onPressed: () => Api().moveServoStepDecrease(5),
+            onPressed: () => Api().moveServoStepIncrease(5),
             child: Text(''),
           ),
         ),
@@ -123,7 +123,7 @@ class CustomJoyStickBase extends StatelessWidget {
           left: 80,
           child: ElevatedButton(
             style: buttonStyle,
-            onPressed: () => Api().moveServoStepIncrease(5),
+            onPressed: () => Api().moveServoStepDecrease(5),
             child: Text(''),
           ),
         ),
