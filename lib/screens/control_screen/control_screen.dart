@@ -331,7 +331,7 @@ class _ControlScreenState extends ConsumerState<ControlScreen> {
   }
 
   holdRelease() {
-    var _buttonTextStyle = TextStyle(color: Colors.white, fontSize: 13);
+    var buttonTextStyle = TextStyle(color: Colors.white, fontSize: 13);
     return Container(
       height: 40,
       decoration: BoxDecoration(
@@ -348,7 +348,7 @@ class _ControlScreenState extends ConsumerState<ControlScreen> {
               onPressed: () async {
                 Api().moveServoToAngle(1, 120);
               },
-              child: Text('Bırak', style: _buttonTextStyle),
+              child: Text('Bırak', style: buttonTextStyle),
             ),
           ),
           SizedBox(width: 5),
@@ -365,7 +365,7 @@ class _ControlScreenState extends ConsumerState<ControlScreen> {
                 onPressed: () async {
                   Api().moveServoStepIncrease(1);
                 },
-                child: Text('Tut', style: _buttonTextStyle),
+                child: Text('Tut', style: buttonTextStyle),
               ),
             ),
           ),

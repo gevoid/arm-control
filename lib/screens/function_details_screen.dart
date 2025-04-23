@@ -1,6 +1,7 @@
 import 'package:armcontrol/models/move_function_model.dart';
 import 'package:armcontrol/screens/control_screen/control_screen.dart';
 import 'package:armcontrol/utils/api.dart';
+import 'package:armcontrol/utils/snackbar.dart';
 import 'package:armcontrol/widgets/runing_function_dialog_widget.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/cupertino.dart';
@@ -12,8 +13,8 @@ import '../consts.dart';
 import '../providers/general_provider.dart';
 
 class FunctionDetailsScreen extends ConsumerStatefulWidget {
-  final MoveFunction moveFunction;
-  const FunctionDetailsScreen({required this.moveFunction, super.key});
+  MoveFunction moveFunction;
+  FunctionDetailsScreen({required this.moveFunction, super.key});
 
   @override
   ConsumerState<FunctionDetailsScreen> createState() =>
@@ -24,6 +25,7 @@ class _FunctionDetailsScreenConsumerState
     extends ConsumerState<FunctionDetailsScreen> {
   late List<GlobalKey<FormState>> formKeys;
   late List<TextEditingController> controllers;
+
   bool editing = false;
   int? lastEditIndex;
   int? editIndex;
@@ -31,7 +33,6 @@ class _FunctionDetailsScreenConsumerState
   @override
   void initState() {
     super.initState();
-
     formKeys = List.generate(
       ref
           .read(generalProvider)
@@ -42,6 +43,7 @@ class _FunctionDetailsScreenConsumerState
           .length,
       (_) => GlobalKey<FormState>(),
     );
+
     controllers = List.generate(6, (_) => TextEditingController());
     WidgetsBinding.instance.addPostFrameCallback((_) {
       cancelEdit();
@@ -53,7 +55,6 @@ class _FunctionDetailsScreenConsumerState
     for (var controller in controllers) {
       controller.dispose();
     }
-
     super.dispose();
   }
 
@@ -62,9 +63,9 @@ class _FunctionDetailsScreenConsumerState
         ref
             .read(generalProvider)
             .moveFunctions
-            .where((func) => func.name == widget.moveFunction.name)
-            .first
-            .commands[index];
+            .firstWhereOrNull((func) => func.name == widget.moveFunction.name)
+            ?.commands[index] ??
+        [];
 
     for (int i = 0; i < controllers.length; i++) {
       controllers[i].text = list[i].toString();
@@ -92,189 +93,214 @@ class _FunctionDetailsScreenConsumerState
 
   @override
   Widget build(BuildContext context) {
-    editing = ref.watch(generalProvider.select((g) => g.functionCmdEditing));
-    lastEditIndex = ref.watch(
-      generalProvider.select((g) => g.functionCmdEditLastIndex),
-    );
-    editIndex = ref.watch(
-      generalProvider.select((g) => g.functionCmdEditIndex),
-    );
-    print('build func details : last edit index $lastEditIndex');
-    final cmds = ref.watch(
-      generalProvider.select(
-        (g) =>
-            g.moveFunctions
-                .firstWhere((func) => func.name == widget.moveFunction.name)
-                .commands,
-      ),
-    );
+    return Consumer(
+      builder: (context, ref, child) {
+        editing = ref.watch(
+          generalProvider.select((g) => g.functionCmdEditing),
+        );
+        lastEditIndex = ref.watch(
+          generalProvider.select((g) => g.functionCmdLastEditIndex),
+        );
+        editIndex = ref.watch(
+          generalProvider.select((g) => g.functionCmdEditIndex),
+        );
+        print('build func details : last edit index $lastEditIndex');
+        print(widget.moveFunction.name);
 
-    return Scaffold(
-      appBar: appBar(context),
-      backgroundColor: backgroundColor,
-
-      body: Column(
-        children: [
-          Container(
-            decoration: BoxDecoration(color: Colors.white12),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Text('Index', style: TextStyle(color: Colors.white70)),
-                  column('S1'),
-                  column('S2'),
-                  column('S3'),
-                  column('S4'),
-                  column('S5'),
-                  column('S6'),
-                  Icon(Icons.play_arrow_rounded, color: Colors.transparent),
-                  SizedBox(width: 16),
-                  Icon(Icons.edit, color: Colors.transparent),
-                  SizedBox(width: 16),
-                  Icon(Icons.delete_forever, color: Colors.transparent),
-                ],
-              ),
-            ),
+        var cmds = ref.read(
+          generalProvider.select(
+            (g) =>
+                g.moveFunctions
+                    .firstWhereOrNull(
+                      (func) => func.name == widget.moveFunction.name,
+                    )
+                    ?.commands ??
+                [],
           ),
+        );
+        formKeys = List.generate(cmds.length, (_) => GlobalKey<FormState>());
+        return Scaffold(
+          appBar: appBar(context),
+          backgroundColor: backgroundColor,
 
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: cmds.length,
-                    itemBuilder: (context, index) {
-                      var formKey = formKeys[index];
-                      if (cmds.isNotEmpty) {
-                        var cmd = cmds[index];
-
-                        return Container(
-                          key: ValueKey(index),
-                          color:
-                              (lastEditIndex == index)
-                                  ? Colors.blue.shade900
-                                  : index.isEven
-                                  ? Colors.transparent
-                                  : Colors.black45,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Form(
-                              key: formKey,
-                              child: Row(
-                                children: [
-                                  Text(
-                                    '#$index',
-                                    style: TextStyle(color: Colors.white60),
-                                  ),
-                                  SizedBox(width: 15),
-                                  ...buildCmdRow(cmd, index, formKey),
-                                  editing && editIndex == index
-                                      ? GestureDetector(
-                                        onTap: () {
-                                          cancelEdit();
-                                        },
-                                        child: Icon(
-                                          Icons.clear,
-                                          color: Colors.white60,
-                                        ),
-                                      )
-                                      : GestureDetector(
-                                        onTap: () async {
-                                          showRunningBoxDialog();
-                                          await Api().runMoveFunction(
-                                            MoveFunction(
-                                              name: widget.moveFunction.name,
-                                              commands: [
-                                                ref
-                                                    .watch(generalProvider)
-                                                    .moveFunctions
-                                                    .where(
-                                                      (func) =>
-                                                          func.name ==
-                                                          widget
-                                                              .moveFunction
-                                                              .name,
-                                                    )
-                                                    .first
-                                                    .commands[index],
-                                              ],
-                                            ),
-                                          );
-                                        },
-                                        child: Icon(
-                                          Icons.play_arrow_rounded,
-                                          color: Colors.white60,
-                                        ),
-                                      ),
-                                  SizedBox(width: 16),
-                                  editing && editIndex == index
-                                      ? GestureDetector(
-                                        onTap: () {
-                                          saveEdit(index, formKey);
-                                        },
-                                        child: Icon(
-                                          Icons.check,
-                                          color: Colors.white60,
-                                        ),
-                                      )
-                                      : GestureDetector(
-                                        onTap: () {
-                                          edit(index);
-                                        },
-                                        child: Icon(
-                                          Icons.edit,
-                                          color: Colors.white60,
-                                        ),
-                                      ),
-
-                                  SizedBox(width: 16),
-                                  GestureDetector(
-                                    onTap: () {
-                                      AwesomeDialog(
-                                        context: context,
-                                        width: 400,
-                                        dialogType: DialogType.warning,
-                                        animType: AnimType.rightSlide,
-                                        title: 'Uyarı',
-                                        desc:
-                                            '${widget.moveFunction.name} adlı fonksiyondaki $index numaralı indeksi silmek istediğinize emin misiniz?',
-                                        btnOkText: 'Sil',
-                                        btnOkOnPress: () {
-                                          ref
-                                              .read(generalProvider.notifier)
-                                              .removeCommandFromFunction(
-                                                widget.moveFunction,
-                                                index,
-                                              );
-                                        },
-                                        btnCancelText: 'İptal',
-                                        btnCancelOnPress: () {},
-                                      ).show();
-                                    },
-                                    child: Icon(
-                                      Icons.delete_forever,
-                                      color: Colors.white60,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      } else {
-                        return SizedBox();
-                      }
-                    },
+          body: Column(
+            children: [
+              Container(
+                decoration: BoxDecoration(color: Colors.white12),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      Text('Index', style: TextStyle(color: Colors.white70)),
+                      column('S1'),
+                      column('S2'),
+                      column('S3'),
+                      column('S4'),
+                      column('S5'),
+                      column('S6'),
+                      Icon(Icons.play_arrow_rounded, color: Colors.transparent),
+                      SizedBox(width: 16),
+                      Icon(Icons.edit, color: Colors.transparent),
+                      SizedBox(width: 16),
+                      Icon(Icons.delete_forever, color: Colors.transparent),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
+
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: cmds.length,
+                        itemBuilder: (context, index) {
+                          var formKey = formKeys[index];
+                          if (cmds.isNotEmpty) {
+                            var cmd = cmds[index];
+
+                            return Container(
+                              key: ValueKey(index),
+                              color:
+                                  (lastEditIndex == index)
+                                      ? Colors.blue.shade900
+                                      : index.isEven
+                                      ? Colors.transparent
+                                      : Colors.black45,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Form(
+                                  key: formKey,
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        '#$index',
+                                        style: TextStyle(color: Colors.white60),
+                                      ),
+                                      SizedBox(width: 15),
+                                      ...buildCmdRow(cmd, index, formKey),
+                                      editing && editIndex == index
+                                          ? GestureDetector(
+                                            onTap: () {
+                                              cancelEdit();
+                                            },
+                                            child: Icon(
+                                              Icons.clear,
+                                              color: Colors.white60,
+                                            ),
+                                          )
+                                          : GestureDetector(
+                                            onTap: () async {
+                                              showRunningBoxDialog();
+                                              await Api().runMoveFunction(
+                                                MoveFunction(
+                                                  name:
+                                                      widget.moveFunction.name,
+                                                  commands: [
+                                                    ref
+                                                        .watch(generalProvider)
+                                                        .moveFunctions
+                                                        .where(
+                                                          (func) =>
+                                                              func.name ==
+                                                              widget
+                                                                  .moveFunction
+                                                                  .name,
+                                                        )
+                                                        .first
+                                                        .commands[index],
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                            child: Icon(
+                                              Icons.play_arrow_rounded,
+                                              color: Colors.white60,
+                                            ),
+                                          ),
+                                      SizedBox(width: 16),
+                                      editing && editIndex == index
+                                          ? GestureDetector(
+                                            onTap: () {
+                                              saveEdit(index, formKey);
+                                            },
+                                            child: Icon(
+                                              Icons.check,
+                                              color: Colors.white60,
+                                            ),
+                                          )
+                                          : GestureDetector(
+                                            onTap: () {
+                                              edit(index);
+                                            },
+                                            child: Icon(
+                                              Icons.edit,
+                                              color: Colors.white60,
+                                            ),
+                                          ),
+
+                                      SizedBox(width: 16),
+                                      GestureDetector(
+                                        onTap: () {
+                                          AwesomeDialog(
+                                            context: context,
+                                            width: 400,
+                                            dialogType: DialogType.warning,
+                                            animType: AnimType.rightSlide,
+                                            title: 'Uyarı',
+                                            desc:
+                                                '${widget.moveFunction.name} adlı fonksiyondaki $index numaralı indeksi silmek istediğinize emin misiniz?',
+                                            btnOkText: 'Sil',
+                                            btnOkOnPress: () {
+                                              ref
+                                                  .read(
+                                                    generalProvider.notifier,
+                                                  )
+                                                  .removeCommandFromFunction(
+                                                    widget.moveFunction,
+                                                    index,
+                                                  )
+                                                  .then((value) {
+                                                    if (value) {
+                                                      setState(() {});
+                                                      // bug olduğu için setstate kullanıldı
+                                                    } else {
+                                                      Snackbar.show(
+                                                        'Fonksiyondaki $index numaralı indeks silinirken hata oluştu. ',
+                                                        success: false,
+                                                      );
+                                                    }
+                                                  });
+                                            },
+                                            btnCancelText: 'İptal',
+                                            btnCancelOnPress: () {},
+                                          ).show();
+                                        },
+                                        child: Icon(
+                                          Icons.delete_forever,
+                                          color: Colors.white60,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          } else {
+                            return SizedBox();
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -305,8 +331,8 @@ class _FunctionDetailsScreenConsumerState
           padding: const EdgeInsets.all(4.0),
           child: SizedBox(
             height: 28,
-            child: TextField(
-              key: ValueKey('edit-${editIndex}-${controller.hashCode}'),
+            child: TextFormField(
+              key: ValueKey('edit-$editIndex-${controller.hashCode}'),
               keyboardType: TextInputType.number,
               controller: controller,
 
@@ -333,16 +359,16 @@ class _FunctionDetailsScreenConsumerState
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 13, color: Colors.white),
 
-              // validator: (value) {
-              //   if (value == null || value.isEmpty) {
-              //     return 'boş olamaz';
-              //   }
-              //   final intValue = int.tryParse(value);
-              //   if (intValue == null) {
-              //     return 'tam sayı girin';
-              //   }
-              //   return null;
-              // },
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'boş olamaz';
+                }
+                final intValue = int.tryParse(value);
+                if (intValue == null) {
+                  return 'tam sayı girin';
+                }
+                return null;
+              },
             ),
           ),
         ),

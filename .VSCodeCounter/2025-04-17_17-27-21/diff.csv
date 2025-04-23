@@ -1,0 +1,17 @@
+"filename", "language", "Dart", "JSON", "comment", "blank", "total"
+"c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\consts.dart", "Dart", 0, 0, 1, 0, 1
+"c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\functions\f1.json", "JSON", 0, -8, 0, -1, -9
+"c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\functions\f2.json", "JSON", 0, 0, 0, -1, -1
+"c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\functions\f3.json", "JSON", 0, 0, 0, -1, -1
+"c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\models\move_function_model.dart", "Dart", -9, 0, 0, -2, -11
+"c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\models\move_function_model.freezed.dart", "Dart", -109, 0, -16, -39, -164
+"c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\models\move_function_model.g.dart", "Dart", -9, 0, 0, -2, -11
+"c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\providers\general_provider.dart", "Dart", 41, 0, 17, 5, 63
+"c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\screens\add_command_screen.dart", "Dart", 0, 0, 172, 1, 173
+"c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\screens\control_screen.dart", "Dart", 117, 0, 4, 3, 124
+"c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\screens\function_details_screen.dart", "Dart", 106, 0, 8, 4, 118
+"c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\screens\functions_screen.dart", "Dart", -4, 0, 0, 0, -4
+"c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\utils\api.dart", "Dart", 55, 0, -21, 5, 39
+"c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\utils\local_utils.dart", "Dart", -5, 0, 0, 0, -5
+"c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\widgets\runing_function_dialog_widget.dart", "Dart", 105, 0, 1, 9, 115
+"Total", "-", 288, -8, 166, -19, 427

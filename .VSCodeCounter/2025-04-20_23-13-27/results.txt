@@ -1,0 +1,53 @@
+Date : 2025-04-20 23:13:27
+Directory : c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib
+Total : 19 files,  2220 codes, 246 comments, 250 blanks, all 2716 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| Dart     |         19 |      2,220 |        246 |        250 |      2,716 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++--------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                               | files      | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                  |         19 |      2,220 |        246 |        250 |      2,716 |
+| . (Files)                                                                                                          |          2 |         41 |          4 |          6 |         51 |
+| models                                                                                                             |          4 |        148 |         30 |         57 |        235 |
+| providers                                                                                                          |          1 |        118 |        154 |         24 |        296 |
+| screens                                                                                                            |          6 |      1,481 |         44 |        109 |      1,634 |
+| screens (Files)                                                                                                    |          3 |        659 |         11 |         46 |        716 |
+| screens\control_screen                                                                                             |          3 |        822 |         33 |         63 |        918 |
+| screens\control_screen (Files)                                                                                     |          1 |        354 |          7 |         30 |        391 |
+| screens\control_screen\widgets                                                                                     |          2 |        468 |         26 |         33 |        527 |
+| utils                                                                                                              |          4 |        180 |          9 |         27 |        216 |
+| widgets                                                                                                            |          2 |        252 |          5 |         27 |        284 |
++--------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++--------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                                                           | language | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\consts.dart                                                 | Dart     |          2 |          1 |          2 |          5 |
+| c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\main.dart                                                   | Dart     |         39 |          3 |          4 |         46 |
+| c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\models\general_provider_state_model.dart                    | Dart     |         47 |          1 |          3 |         51 |
+| c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\models\move_function_model.dart                             | Dart     |         16 |          0 |          7 |         23 |
+| c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\models\move_function_model.freezed.dart                     | Dart     |         71 |         25 |         42 |        138 |
+| c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\models\move_function_model.g.dart                           | Dart     |         14 |          4 |          5 |         23 |
+| c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\providers\general_provider.dart                             | Dart     |        118 |        154 |         24 |        296 |
+| c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\screens\control_screen\control_screen.dart                  | Dart     |        354 |          7 |         30 |        391 |
+| c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\screens\control_screen\widgets\function_buttons_widget.dart | Dart     |        257 |          0 |          7 |        264 |
+| c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\screens\control_screen\widgets\sensor_box_widget.dart       | Dart     |        211 |         26 |         26 |        263 |
+| c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\screens\function_details_screen.dart                        | Dart     |        380 |         10 |         28 |        418 |
+| c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\screens\functions_screen.dart                               | Dart     |        173 |          1 |         10 |        184 |
+| c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\screens\settings_screen.dart                                | Dart     |        106 |          0 |          8 |        114 |
+| c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\utils\api.dart                                              | Dart     |        116 |          9 |         15 |        140 |
+| c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\utils\dialog_utils.dart                                     | Dart     |          0 |          0 |          1 |          1 |
+| c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\utils\local_utils.dart                                      | Dart     |         27 |          0 |          7 |         34 |
+| c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\utils\snackbar.dart                                         | Dart     |         37 |          0 |          4 |         41 |
+| c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\widgets\custom_stick.dart                                   | Dart     |        136 |          4 |         16 |        156 |
+| c:\Users\mehme\OneDrive\Belgeler\GitHub\armcontrol\lib\widgets\runing_function_dialog_widget.dart                  | Dart     |        116 |          1 |         11 |        128 |
+| Total                                                                                                              |          |      2,220 |        246 |        250 |      2,716 |
++--------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
