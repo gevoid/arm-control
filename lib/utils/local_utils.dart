@@ -10,7 +10,7 @@ class LocalUtils {
   Future<bool> saveMoveFunctions(List<MoveFunction> mfl) async {
     final String jsonString = jsonEncode(
       mfl.map((user) => user.toJson()).toList(),
-    ); // Listeyi JSON'a çevir
+    );
 
     return await encryptedSharedPreferences.setString(
       'moveFunctions',
@@ -23,11 +23,18 @@ class LocalUtils {
     await encryptedSharedPreferences.getString('moveFunctions').then((
       String value,
     ) {
-      print('++++++++++++++++okuma değeri:  ' + value);
       data = (value == '' ? '[]' : value);
     });
 
     final List<dynamic> jsonList = jsonDecode(data);
     return jsonList.map((json) => MoveFunction.fromJson(json)).toList();
+  }
+
+  Future<bool> saveConnectionIp(String ip) async {
+    return await encryptedSharedPreferences.setString('connectionIp', ip);
+  }
+
+  Future<String> getConnectionIp() async {
+    return await encryptedSharedPreferences.getString('connectionIp');
   }
 }

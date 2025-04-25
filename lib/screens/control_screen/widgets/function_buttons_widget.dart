@@ -2,10 +2,9 @@ part of '../control_screen.dart';
 
 class FunctionButtonsWidget extends ConsumerWidget {
   FunctionButtonsWidget({super.key});
-  var buttonTextStyle = TextStyle(color: Colors.white);
+  final buttonTextStyle = TextStyle(color: Colors.white);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    print('build Function Buttons');
     bool moveRecMode = ref.watch(generalProvider.select((g) => g.moveRecMode));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -34,7 +33,7 @@ class FunctionButtonsWidget extends ConsumerWidget {
                 showRunningBoxDialog();
                 await Api().runMoveFunction(mfl[i]);
               },
-              child: Text(mfl[i].name ?? '', style: buttonTextStyle),
+              child: Text(mfl[i].name, style: buttonTextStyle),
             ),
             moveRecFunctionName == mfl[i].name
                 ? Padding(
@@ -130,7 +129,7 @@ class FunctionButtonsWidget extends ConsumerWidget {
                                       });
                                     },
                                     child: Text(
-                                      mfl[i].name ?? '',
+                                      mfl[i].name,
                                       style: buttonTextStyle,
                                     ),
                                   ),

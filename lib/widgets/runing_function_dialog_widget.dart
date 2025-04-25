@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class RotatingBoxDialog extends StatefulWidget {
+  const RotatingBoxDialog({super.key});
+
   @override
-  _RotatingBoxDialogState createState() => _RotatingBoxDialogState();
+  State<RotatingBoxDialog> createState() => _RotatingBoxDialogState();
 }
 
 class _RotatingBoxDialogState extends State<RotatingBoxDialog>
@@ -19,7 +21,6 @@ class _RotatingBoxDialogState extends State<RotatingBoxDialog>
       timer,
     ) async {
       await Api().checkMoveFunctionStatus().then((value) {
-        print('$value');
         if (value == true) {
           Get.back();
         }
@@ -41,7 +42,6 @@ class _RotatingBoxDialogState extends State<RotatingBoxDialog>
   void dispose() {
     _statusTimer?.cancel();
     if (_animationController.isAnimating) {
-      print('animasyon durduruldu dispose');
       _animationController.dispose(); // Bellek sızıntısı olmaması için
     }
 
@@ -83,7 +83,6 @@ class _RotatingBoxDialogState extends State<RotatingBoxDialog>
             await Api().stopMoveFunction().then((value) {
               if (value) {
                 if (_animationController.isAnimating) {
-                  print('animasyon durduruldu');
                   _animationController
                       .dispose(); // Bellek sızıntısı olmaması için
                 }

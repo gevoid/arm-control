@@ -1,7 +1,7 @@
 part of '../control_screen.dart';
 
 class _SensorDataBox extends ConsumerStatefulWidget {
-  const _SensorDataBox({super.key});
+  const _SensorDataBox();
 
   @override
   ConsumerState<_SensorDataBox> createState() => _SensorDataBoxState();
@@ -10,8 +10,6 @@ class _SensorDataBox extends ConsumerStatefulWidget {
 class _SensorDataBoxState extends ConsumerState<_SensorDataBox> {
   @override
   Widget build(BuildContext context) {
-    print('sensor box builded');
-
     double tempValue = ref.watch(generalProvider.select((g) => g.tempValue));
     double distanceValue = ref.watch(
       generalProvider.select((g) => g.distanceValue),
@@ -55,7 +53,7 @@ class _SensorDataBoxState extends ConsumerState<_SensorDataBox> {
                           builder: (context, child, value) {
                             return Center(
                               child: Text(
-                                '${tempValue}°',
+                                '$tempValue°',
                                 style: TextStyle(color: Colors.white70),
                               ),
                             );
@@ -250,7 +248,7 @@ class _SensorDataBoxState extends ConsumerState<_SensorDataBox> {
 
   Text _connectionStatusText() {
     bool isConnected = ref.watch(generalProvider.select((g) => g.isConnected));
-    ;
+
     return Text(
       isConnected ? '◉ Wİ-Fİ Bağlı' : '◉ Wİ-Fİ Bağlı Değil',
       style: TextStyle(

@@ -1,3 +1,4 @@
+import 'package:armcontrol/screens/connection_settings_screen.dart';
 import 'package:armcontrol/screens/functions_screen.dart';
 import 'package:armcontrol/utils/snackbar.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   TextStyle buttonTextStyle = TextStyle(color: Colors.blueGrey);
   @override
   Widget build(BuildContext context) {
-    print('settings build');
     return Scaffold(
       appBar: appBar(context),
       backgroundColor: backgroundColor,
@@ -35,13 +35,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             button(
               'Bağlantı Ayarları',
               Icon(Icons.wifi_tethering_outlined, color: Colors.white),
-              FunctionsScreen(),
-              pressFunction: () {
-                Snackbar.show(
-                  'Bu özellik geliştirme aşamasında.',
-                  success: true,
-                );
-              },
+              ConnectionSettingsScreen(),
+
               context,
             ),
 

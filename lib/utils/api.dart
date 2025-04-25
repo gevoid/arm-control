@@ -6,7 +6,7 @@ import 'package:dio/dio.dart';
 
 class Api {
   final dio = Dio();
-  String ip = "192.168.1.184";
+  static String ip = ""; // uygulama başladığında localden setlenir
   String get basePath => 'http://$ip';
 
   moveServoToAngle(int servoNumber, int desiredAngle) async {
@@ -14,15 +14,6 @@ class Api {
       await dio.get('$basePath/servo?number=$servoNumber&angle=$desiredAngle');
     } on DioException catch (e) {
       Snackbar.show(prettyException("Hata Oluştu:", e), success: false);
-      // if (e.response != null) {
-      //   print(e.response!.data);
-      //   print(e.response!.headers);
-      //   print(e.response!.requestOptions);
-      // } else {
-      //   // Something happened in setting up or sending the request that triggered an Error
-      //   print(e.requestOptions);
-      //   print(e.message);
-      // }
     }
   }
 
@@ -91,7 +82,6 @@ class Api {
   }
 
   Future<bool> runMoveFunction(MoveFunction mf) async {
-    print(mf.toJson());
     try {
       Response response = await dio.post(
         '$basePath/runMoveFunction',

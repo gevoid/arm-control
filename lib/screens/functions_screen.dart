@@ -19,14 +19,7 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
   bool addFunction = false;
 
   @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    print('functions screen build');
     var moveFunctions = ref.watch(
       generalProvider.select((g) => g.moveFunctions),
     );
@@ -74,7 +67,7 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
                           children: [
                             SizedBox(width: 16),
                             Text(
-                              function.name ?? '',
+                              function.name,
                               style: TextStyle(
                                 color: Colors.white70,
                                 fontSize: 18,
@@ -156,17 +149,19 @@ class _FunctionsScreenState extends ConsumerState<FunctionsScreen> {
                     .addMoveFunction(functionNameController.text)
                     .then((value) {
                       if (!value) {
-                        AwesomeDialog(
-                          context: context,
-                          width: 400,
-                          dialogType: DialogType.error,
-                          animType: AnimType.rightSlide,
-                          title: 'Hata',
-                          desc:
-                              '${functionNameController.text.toUpperCase()} adında bir fonksiyon zaten mevcut.',
-                          btnOkText: 'Tamam',
-                          btnOkOnPress: () {},
-                        ).show();
+                        if (mounted) {
+                          AwesomeDialog(
+                            context: context,
+                            width: 400,
+                            dialogType: DialogType.error,
+                            animType: AnimType.rightSlide,
+                            title: 'Hata',
+                            desc:
+                                '${functionNameController.text.toUpperCase()} adında bir fonksiyon zaten mevcut.',
+                            btnOkText: 'Tamam',
+                            btnOkOnPress: () {},
+                          ).show();
+                        }
                       } else {
                         setState(() {
                           addFunction = false;

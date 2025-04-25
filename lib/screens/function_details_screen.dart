@@ -13,8 +13,8 @@ import '../consts.dart';
 import '../providers/general_provider.dart';
 
 class FunctionDetailsScreen extends ConsumerStatefulWidget {
-  MoveFunction moveFunction;
-  FunctionDetailsScreen({required this.moveFunction, super.key});
+  final MoveFunction moveFunction;
+  const FunctionDetailsScreen({required this.moveFunction, super.key});
 
   @override
   ConsumerState<FunctionDetailsScreen> createState() =>
@@ -104,8 +104,8 @@ class _FunctionDetailsScreenConsumerState
         editIndex = ref.watch(
           generalProvider.select((g) => g.functionCmdEditIndex),
         );
-        print('build func details : last edit index $lastEditIndex');
-        print(widget.moveFunction.name);
+        // print('build func details : last edit index $lastEditIndex');
+        // print(widget.moveFunction.name);
 
         var cmds = ref.read(
           generalProvider.select(
@@ -248,6 +248,7 @@ class _FunctionDetailsScreenConsumerState
                                             context: context,
                                             width: 400,
                                             dialogType: DialogType.warning,
+
                                             animType: AnimType.rightSlide,
                                             title: 'Uyarı',
                                             desc:
@@ -379,7 +380,7 @@ class _FunctionDetailsScreenConsumerState
   AppBar appBar(BuildContext context) {
     return AppBar(
       title: Text(
-        widget.moveFunction.name ?? '',
+        widget.moveFunction.name,
         style: TextStyle(color: Colors.white),
       ),
       leading: IconButton(

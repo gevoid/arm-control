@@ -31,7 +31,7 @@ class _ControlScreenState extends ConsumerState<ControlScreen> {
   Duration commandSendPeriod = Duration(milliseconds: 60);
   var buttonTextStyle = TextStyle(color: Colors.white);
   bool moveRecMode = false;
-
+  @override
   void initState() {
     super.initState();
     SystemChrome.setPreferredOrientations([
@@ -86,9 +86,7 @@ class _ControlScreenState extends ConsumerState<ControlScreen> {
     _s2Timer = Timer.periodic(commandSendPeriod, (timer) {
       if (increase) {
         Api().moveServoStepIncrease(2);
-        print('increase');
       } else {
-        print('deacrease');
         Api().moveServoStepDecrease(2);
       }
     });
@@ -102,9 +100,7 @@ class _ControlScreenState extends ConsumerState<ControlScreen> {
     _s3Timer = Timer.periodic(commandSendPeriod, (timer) {
       if (increase) {
         Api().moveServoStepIncrease(3);
-        print('increase');
       } else {
-        print('deacrease');
         Api().moveServoStepDecrease(3);
       }
     });
@@ -118,9 +114,7 @@ class _ControlScreenState extends ConsumerState<ControlScreen> {
     _s4Timer = Timer.periodic(commandSendPeriod, (timer) {
       if (increase) {
         Api().moveServoStepIncrease(4);
-        print('increase');
       } else {
-        print('deacrease');
         Api().moveServoStepDecrease(4);
       }
     });
@@ -132,7 +126,6 @@ class _ControlScreenState extends ConsumerState<ControlScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('build control');
     return Scaffold(
       backgroundColor: backgroundColor,
       body: Padding(
@@ -235,9 +228,6 @@ class _ControlScreenState extends ConsumerState<ControlScreen> {
       mode: JoystickMode.horizontalAndVertical,
       period: commandSendPeriod,
       listener: (details) async {
-        double x = details.x;
-        double y = details.y;
-
         if (details.x > 0.30) {
           Api().moveServoStepIncrease(6);
         } else if (details.x < -0.30) {
@@ -249,9 +239,6 @@ class _ControlScreenState extends ConsumerState<ControlScreen> {
         } else if (details.y < -0.30) {
           Api().moveServoStepIncrease(5);
         }
-
-        // print(details.x);
-        // print(details.y);
       },
     );
   }

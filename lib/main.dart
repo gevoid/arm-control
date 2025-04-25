@@ -3,16 +3,17 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:armcontrol/screens/control_screen/control_screen.dart';
+import 'package:armcontrol/utils/api.dart';
+import 'package:armcontrol/utils/local_utils.dart';
 import 'package:armcontrol/utils/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
-
 import 'consts.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   WakelockPlus.enable();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
@@ -23,6 +24,7 @@ void main() {
       statusBarIconBrightness: Brightness.light,
     ),
   );
+  Api.ip = await LocalUtils().getConnectionIp();
   runApp(
     ProviderScope(
       child: GetMaterialApp(

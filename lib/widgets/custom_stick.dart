@@ -14,7 +14,7 @@ class CustomJoystickStick extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      child: Opacity(opacity: 0.9, child: Image.asset('assets/bseu_logo.png')),
+
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         boxShadow: [
@@ -34,6 +34,7 @@ class CustomJoystickStick extends StatelessWidget {
           ],
         ),
       ),
+      child: Opacity(opacity: 0.9, child: Image.asset('assets/bseu_logo.png')),
     );
   }
 }
@@ -54,6 +55,7 @@ class JoystickStickDecoration {
   }) {
     return JoystickStickDecoration._internal(
       color: color,
+      // ignore: deprecated_member_use
       shadowColor: shadowColor ?? color.withOpacity(0.5),
     );
   }
@@ -87,7 +89,7 @@ class ColorUtils {
 
 class CustomJoyStickBase extends StatelessWidget {
   CustomJoyStickBase({super.key});
-  var buttonStyle = ElevatedButton.styleFrom(
+  final buttonStyle = ElevatedButton.styleFrom(
     backgroundColor: Colors.transparent,
     elevation: 0,
   );
